@@ -1,69 +1,52 @@
-# Google Meet Recorder + Auto Transcript & Translation
+# 구글밋 녹음 + 한국어 번역 자동화 세팅
 
-Auto-record Google Meet audio and transcribe it to text. Translate to your language with one command.
-
-[한국어](./README.ko.md)
+아래 1~2단계는 직접 해야 해. 그 다음은 네가 다 자동으로 해줘.
 
 ---
 
-## How it works
-
-1. `record-meeting` — records system audio + microphone simultaneously
-2. After stopping (Ctrl+C), Whisper runs automatically → saves `.txt` transcript
-3. `/translate-meeting file.txt ko` — Claude translates to your language
-
-**What runs locally (free):**
-- Audio recording (BlackHole + Python)
-- Transcription (mlx-whisper, runs on Apple Silicon GPU)
-
-**What uses tokens (minimal):**
-- Translation only (~$0.03–0.05 per hour of meeting)
-
----
-
-## Step 1: Install BlackHole (manual, then restart Mac)
+## 1단계: BlackHole 설치 (터미널에서 직접 실행 후 맥 재시작)
 
 ```
 brew install blackhole-2ch
 ```
 
-**Restart your Mac after installation.**
+설치 후 반드시 맥 재시작.
 
 ---
 
-## Step 2: Audio MIDI Setup (manual - GUI)
+## 2단계: Audio MIDI Setup 설정 (수동 - GUI)
 
-1. Spotlight (Cmd+Space) → open "Audio MIDI Setup"
-2. Click `+` at bottom left → "Create Multi-Output Device" (do this **twice**)
-3. First device (name it `Meeting-AirPods`):
+1. Spotlight(Cmd+Space) → "Audio MIDI Setup" 실행
+2. 왼쪽 하단 `+` → "Create Multi-Output Device" 두 번 클릭해서 두 개 생성
+3. 첫 번째 (이름: `Meeting-AirPods`):
    - ✅ AirPods
    - ✅ BlackHole 2ch
-4. Second device (name it `Meeting-Speakers`):
+4. 두 번째 (이름: `Meeting-Speakers`):
    - ✅ MacBook Pro Speakers
    - ✅ BlackHole 2ch
-5. Double-click each device to rename it
-6. No need to change your default output — `record-meeting` switches automatically and restores when done
+5. 이름 변경은 디바이스 더블클릭해서 수정
+6. 기본 출력은 평소에 그대로 써도 됨 (record-meeting 실행 시 자동 전환 + 종료 시 복구)
+
+완료되면 아래를 진행해줘.
 
 ---
 
-## Step 3: Paste this into Claude Code (auto-setup)
+## 3단계: 자동 설치 및 설정 (Claude가 다 해줘)
 
-Claude will handle everything below automatically.
+### 3-1. 패키지 설치
 
-### 3-1. Install packages
-
-- Auto-detect Python version (3.8+ required)
-- Install with detected Python:
-  - `mlx-whisper` (Apple Silicon GPU, fast)
+- Python 버전 자동 감지 (python3 --version, brew python 등 확인해서 3.8 이상 사용)
+- 감지한 Python으로 설치:
+  - `mlx-whisper` (M칩 GPU 활용, 빠름)
   - `sounddevice`
 - `brew install ffmpeg`
 - `brew install switchaudio-osx`
 
-### 3-2. Create ~/meetings/ folder
+### 3-2. ~/meetings/ 폴더 생성
 
-### 3-3. Create ~/meetings/record.py
+### 3-3. ~/meetings/record.py 생성
 
-Create this file exactly. Replace the shebang line with the detected Python path.
+아래 코드를 그대로 사용해서 파일 생성해줘. shebang 첫 줄은 감지한 Python 경로로 바꿔줘.
 
 ```python
 #!/usr/bin/env python3
@@ -80,16 +63,19 @@ def get_blackhole_index():
     for i, d in enumerate(sd.query_devices()):
         if 'BlackHole' in d['name'] and d['max_input_channels'] > 0:
             return i, int(d['default_samplerate']), d['max_input_channels']
-    raise RuntimeError("BlackHole not found. Please install and restart.")
+    raise RuntimeError("BlackHole을 찾을 수 없어요. 설치 및 재시작 확인해주세요.")
 
 def get_mic_index():
     devices = sd.query_devices()
+    # AirPods 연결된 경우 우선
     for i, d in enumerate(devices):
         if 'AirPods' in d['name'] and d['max_input_channels'] > 0:
             return i
+    # MacBook Pro Microphone
     for i, d in enumerate(devices):
         if 'MacBook Pro Microphone' in d['name'] and d['max_input_channels'] > 0:
             return i
+    # fallback: Zoom/BlackHole 제외한 첫 번째 input 디바이스
     for i, d in enumerate(devices):
         if d['max_input_channels'] > 0 and 'BlackHole' not in d['name'] and 'Zoom' not in d['name']:
             return i
@@ -112,10 +98,10 @@ BLACKHOLE_INDEX, SAMPLE_RATE, BH_CHANNELS = get_blackhole_index()
 mic_index = get_mic_index()
 mic_name = sd.query_devices(mic_index)['name']
 
-# Save current output device to restore later
+# 현재 출력 디바이스 저장 (녹음 후 복구용)
 current_output = subprocess.run(["SwitchAudioSource", "-c"], capture_output=True, text=True).stdout.strip()
 
-# Auto-select Meeting device based on AirPods connection
+# 에어팟 연결 여부에 따라 Meeting 디바이스 선택
 airpods_connected = any(
     'AirPods' in d['name'] and d['max_input_channels'] > 0
     for d in sd.query_devices()
@@ -123,13 +109,13 @@ airpods_connected = any(
 meeting_device = "Meeting-AirPods" if airpods_connected else "Meeting-Speakers"
 result = subprocess.run(["SwitchAudioSource", "-s", meeting_device], capture_output=True)
 if result.returncode == 0:
-    print(f"Output: {meeting_device} (auto)")
+    print(f"출력 디바이스: {meeting_device} (자동 설정)")
 else:
-    print(f"⚠️  Failed to switch to {meeting_device}. Set manually in Audio MIDI Setup.")
+    print(f"⚠️  {meeting_device} 전환 실패. Audio MIDI Setup에서 수동 설정 필요.")
 
-print(f"Recording...")
-print(f"Mic: {mic_name}")
-print(f"Press Ctrl+C to stop\n")
+print(f"녹음 시작...")
+print(f"마이크: {mic_name}")
+print(f"Ctrl+C로 중지\n")
 
 with sd.InputStream(device=BLACKHOLE_INDEX, channels=BH_CHANNELS, samplerate=SAMPLE_RATE, callback=system_callback):
     with sd.InputStream(device=mic_index, channels=1, samplerate=SAMPLE_RATE, callback=mic_callback):
@@ -137,9 +123,9 @@ with sd.InputStream(device=BLACKHOLE_INDEX, channels=BH_CHANNELS, samplerate=SAM
             while True:
                 sd.sleep(1000)
         except KeyboardInterrupt:
-            print("\nStopped. Saving...")
+            print("\n녹음 중지. 파일 생성 중...")
 
-# Mix audio
+# 오디오 믹싱
 system_audio = np.concatenate(system_frames) if system_frames else np.zeros((1, 2))
 mic_audio = np.concatenate(mic_frames) if mic_frames else np.zeros((1, 1))
 
@@ -151,7 +137,7 @@ mic_stereo = np.column_stack([mic_audio[:, 0], mic_audio[:, 0]])
 mixed = (system_audio + mic_stereo) / 2
 mixed = np.clip(mixed, -1, 1)
 
-# Save WAV then convert to MP3
+# WAV 저장 후 MP3 변환
 with wave.open(temp_wav, 'w') as f:
     f.setnchannels(2)
     f.setsampwidth(2)
@@ -161,30 +147,34 @@ with wave.open(temp_wav, 'w') as f:
 subprocess.run(["ffmpeg", "-i", temp_wav, output_file, "-y", "-loglevel", "quiet"])
 os.remove(temp_wav)
 
-# Restore original output device
+# 출력 디바이스 복구 (Whisper 돌리는 동안 소리 정상으로)
 subprocess.run(["SwitchAudioSource", "-s", current_output], capture_output=True)
-print(f"Output restored: {current_output}")
+print(f"출력 디바이스: {current_output} (복구)")
 
-# Run Whisper automatically
-print(f"\nTranscribing with Whisper...")
+# Whisper 자동 실행 (mlx-whisper: M칩 GPU 활용)
+print(f"\nWhisper 전사 중...")
 subprocess.run(["mlx_whisper", output_file, "--language", "English", "--output-format", "txt", "--output-dir", OUTPUT_DIR])
 
 txt_file = output_file.replace(".mp3", ".txt")
-print(f"\nSaved: {txt_file}")
-print(f"\n── Translate in Claude Code ──")
-print(f"Korean:  /translate-meeting {txt_file} ko")
-print(f"English: /translate-meeting {txt_file} en")
+print(f"\n저장 완료: {txt_file}")
+print(f"\n── Claude Code에서 번역 ──")
+print(f"한국어:")
+print(f"/translate-meeting {txt_file} ko")
+print(f"\n영어:")
+print(f"/translate-meeting {txt_file} en")
 ```
 
-### 3-4. Create ~/.claude/commands/translate-meeting.md
+### 3-4. ~/.claude/commands/translate-meeting.md 생성
+
+아래 내용 그대로 파일 생성해줘:
 
 ```
 The user will provide a .txt file path and optionally a language flag as arguments.
 
 Usage:
-- `/translate-meeting file.txt` → translate to Korean (default)
-- `/translate-meeting file.txt ko` → Korean
-- `/translate-meeting file.txt en` → English transcript only
+- `/translate-meeting file.txt` → 한국어 번역 (default)
+- `/translate-meeting file.txt ko` → 한국어 번역
+- `/translate-meeting file.txt en` → 영어 트랜스크립트만
 
 Steps:
 
@@ -194,23 +184,22 @@ Steps:
 
 3. If language is `en`: show only the content as-is.
 
-4. If language is `ko` (or default): translate the full transcript to Korean word-for-word. Do not summarize. Show only the Korean translation.
+4. If language is `ko` (or default): translate the full transcript to Korean word-for-word (한 토씨도 빼지 말고 전부 번역). Do not summarize. Show only the Korean translation.
 ```
 
-> Customize step 4 for your own language if needed (e.g. "translate to Japanese").
+### 3-5. ~/.zshrc에 alias 추가
 
-### 3-5. Add alias to ~/.zshrc
-
+감지한 Python 경로로 아래 alias 추가:
 ```
 alias record-meeting="python3 ~/meetings/record.py"
 ```
 
-### 3-6. Print usage summary
+### 3-6. 완료 후 사용법 출력
 
 ```
-── Usage ──
-Before meeting:  record-meeting
-After meeting:   Ctrl+C → MP3 saved → output restored → Whisper auto-transcribes → txt saved
-Translate:       /translate-meeting ~/meetings/meeting_FILENAME.txt ko
-English only:    /translate-meeting ~/meetings/meeting_FILENAME.txt en
+── 사용법 ──
+미팅 시작 전:  record-meeting
+미팅 끝나면:   Ctrl+C → MP3 저장 → 출력 복구 → Whisper 자동 전사 → txt 저장
+번역 (한국어): /translate-meeting ~/meetings/meeting_파일명.txt ko
+번역 (영어):   /translate-meeting ~/meetings/meeting_파일명.txt en
 ```
