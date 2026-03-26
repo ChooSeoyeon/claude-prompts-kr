@@ -1,6 +1,32 @@
-아래를 자동으로 실행해줘. 1, 2단계는 이미 수동으로 완료됨 (BlackHole 설치, Audio MIDI Setup에서 Meeting-AirPods, Meeting-Speakers 디바이스 설정).
+맥OS에서 구글밋 녹음기를 세팅해줘. 순서대로 진행해. 1, 2단계는 사용자가 직접 해야 하는 수동 작업이야 — 사용자에게 안내하고, 완료 확인 후 3단계부터 자동으로 진행해.
 
-## 1. 패키지 설치
+## 1. BlackHole 설치 (수동)
+
+사용자에게 아래 명령어를 실행하라고 안내해:
+
+```
+brew install blackhole-2ch
+```
+
+설치 후 **맥을 반드시 재시작**해야 한다고 알려줘.
+
+## 2. Audio MIDI Setup 설정 (수동)
+
+아래 GUI 설정을 사용자에게 안내해:
+
+1. **Audio MIDI Setup** 열기 (Spotlight → "Audio MIDI Setup")
+2. 왼쪽 하단 `+` 클릭 → **Create Multi-Output Device** (두 번 반복)
+3. 첫 번째 — 더블클릭해서 이름을 `Meeting-AirPods`으로 변경:
+   - ✅ AirPods
+   - ✅ BlackHole 2ch
+4. 두 번째 — 더블클릭해서 이름을 `Meeting-Speakers`으로 변경:
+   - ✅ MacBook Pro Speakers
+   - ✅ BlackHole 2ch
+5. 시스템 기본 출력은 그대로 둬도 됨 — 녹음 스크립트가 자동으로 전환/복구함
+
+두 디바이스 생성 완료를 확인한 후, 여기서부터 자동으로 진행해.
+
+## 3. 패키지 설치
 
 - Python 버전 자동 감지 (3.8 이상 필요)
 - 감지된 Python으로 설치:
@@ -9,9 +35,9 @@
 - `brew install ffmpeg`
 - `brew install switchaudio-osx`
 
-## 2. ~/meetings/ 폴더 생성
+## 4. ~/meetings/ 폴더 생성
 
-## 3. ~/meetings/record.py 생성
+## 5. ~/meetings/record.py 생성
 
 아래 내용 그대로 생성. 셔뱅(shebang) 줄은 감지된 Python 경로로 교체.
 
@@ -126,7 +152,7 @@ print(f"한국어: /translate-meeting {txt_file} ko")
 print(f"영어:   /translate-meeting {txt_file} en")
 ```
 
-## 4. ~/.claude/commands/translate-meeting.md 생성
+## 6. ~/.claude/commands/translate-meeting.md 생성
 
 ```
 The user will provide a .txt file path and optionally a language flag as arguments.
@@ -147,13 +173,13 @@ Steps:
 4. If language is `ko` (or default): translate the full transcript to Korean word-for-word (한 토씨도 빼지 말고 전부 번역). Do not summarize. Show only the Korean translation.
 ```
 
-## 5. ~/.zshrc에 alias 추가
+## 7. ~/.zshrc에 alias 추가
 
 ```
 alias record-meeting="python3 ~/meetings/record.py"
 ```
 
-## 6. 사용법 출력
+## 8. 사용법 출력
 
 ```
 ── 사용법 ──

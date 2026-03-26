@@ -1,6 +1,32 @@
-Do the following automatically. Steps 1 and 2 have already been completed manually (BlackHole installed, Audio MIDI Setup configured with Meeting-AirPods and Meeting-Speakers devices).
+Set up a Google Meet recorder on macOS. Follow all steps in order. Steps 1 and 2 require manual user action — guide the user through them, then proceed automatically from step 3.
 
-## 1. Install packages
+## 1. Install BlackHole (manual)
+
+Tell the user to run:
+
+```
+brew install blackhole-2ch
+```
+
+Then tell them to **restart their Mac** before continuing.
+
+## 2. Configure Audio MIDI Setup (manual)
+
+Guide the user through this GUI setup:
+
+1. Open **Audio MIDI Setup** (Spotlight → "Audio MIDI Setup")
+2. Click `+` at the bottom left → **Create Multi-Output Device** (do this **twice**)
+3. First device — double-click to rename it `Meeting-AirPods`:
+   - ✅ AirPods
+   - ✅ BlackHole 2ch
+4. Second device — double-click to rename it `Meeting-Speakers`:
+   - ✅ MacBook Pro Speakers
+   - ✅ BlackHole 2ch
+5. No need to change the default system output — the recording script handles switching automatically
+
+Once the user confirms both devices are created, proceed automatically from here.
+
+## 3. Install packages
 
 - Auto-detect Python version (3.8+ required)
 - Install with detected Python:
@@ -9,9 +35,9 @@ Do the following automatically. Steps 1 and 2 have already been completed manual
 - `brew install ffmpeg`
 - `brew install switchaudio-osx`
 
-## 2. Create ~/meetings/ folder
+## 4. Create ~/meetings/ folder
 
-## 3. Create ~/meetings/record.py
+## 5. Create ~/meetings/record.py
 
 Create this file exactly. Replace the shebang line with the detected Python path.
 
@@ -126,7 +152,7 @@ print(f"Korean:  /translate-meeting {txt_file} ko")
 print(f"English: /translate-meeting {txt_file} en")
 ```
 
-## 4. Create ~/.claude/commands/translate-meeting.md
+## 6. Create ~/.claude/commands/translate-meeting.md
 
 ```
 The user will provide a .txt file path and optionally a language flag as arguments.
@@ -149,13 +175,13 @@ Steps:
 
 > Customize step 4 for your own language if needed (e.g. "translate to Japanese").
 
-## 5. Add alias to ~/.zshrc
+## 7. Add alias to ~/.zshrc
 
 ```
 alias record-meeting="python3 ~/meetings/record.py"
 ```
 
-## 6. Print usage summary
+## 8. Print usage summary
 
 ```
 ── Usage ──
