@@ -17,10 +17,15 @@
 
 ## 사용법
 
+**터미널**
 ```
-미팅 시작 전:        record-meeting
-미팅 끝나면:         Ctrl+C
-번역 (Claude Code): /translate-meeting ~/meetings/meeting_파일명.txt ko
+미팅 시작 전: record-meeting
+미팅 끝나면:  Ctrl+C
+```
+
+**Claude Code**
+```
+번역: /translate-meeting ~/meetings/meeting_파일명.txt ko
 ```
 
 ---
