@@ -19,34 +19,9 @@
 
 ---
 
-## 사전 준비 (직접 해야 하는 단계)
-
-### 1. BlackHole 설치 후 맥 재시작
-
-```bash
-brew install blackhole-2ch
-```
-
-**설치 후 반드시 맥 재시작.**
-
-### 2. Audio MIDI Setup 설정 (GUI)
-
-1. Spotlight(Cmd+Space) → "Audio MIDI Setup" 실행
-2. 왼쪽 하단 `+` → "Create Multi-Output Device" 두 번 생성
-3. 첫 번째 — 이름: `Meeting-AirPods`:
-   - ✅ AirPods
-   - ✅ BlackHole 2ch
-4. 두 번째 — 이름: `Meeting-Speakers`:
-   - ✅ MacBook Pro Speakers
-   - ✅ BlackHole 2ch
-5. 이름 변경은 디바이스 더블클릭
-6. 기본 출력은 그대로 둬도 됨 (record-meeting 실행 시 자동 전환 + 종료 시 복구)
-
----
-
 ## 세팅
 
-[prompt.md](./prompt.md) 내용을 Claude Code에 붙여넣으면 나머지는 Claude가 자동으로 처리.
+[prompt.md](./prompt.md) 내용을 Claude Code에 붙여넣은 후 시키는 대로 하면 됩니다.
 
 ---
 
