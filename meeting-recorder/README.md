@@ -1,18 +1,18 @@
-# 구글밋 자동 녹음 + 트랜스크립트 + 번역
+# 미팅 자동 녹음 + 텍스트 변환 + 번역
 
-구글밋 오디오를 자동 녹음하고 텍스트로 전사. 명령어 하나로 번역까지.
+시스템 오디오 + 마이크를 동시 녹음해 .mp3 파일로 저장. 자동으로 텍스트 변환 후 명령어 하나로 번역까지.
 
 ---
 
 ## 동작 방식
 
-1. `record-meeting` — 시스템 오디오 + 마이크 동시 녹음
-2. 종료(Ctrl+C) 후 Whisper 자동 실행 → `.txt` 트랜스크립트 저장
+1. `record-meeting` — 시스템 오디오 + 마이크 동시 녹음 → `.mp3` 저장
+2. 종료(Ctrl+C) 후 Whisper 자동 실행 → `.txt` 텍스트 변환
 3. `/translate-meeting file.txt ko` — Claude가 한국어로 번역
 
 **로컬에서 실행 (무료):**
 - 오디오 녹음 (BlackHole + Python)
-- 전사 (mlx-whisper, Apple Silicon GPU 활용)
+- 텍스트 변환 (mlx-whisper, Apple Silicon GPU 활용)
 
 **토큰 사용 (소량):**
 - 번역 단계만 (~1시간 미팅 기준 $0.03~0.05)

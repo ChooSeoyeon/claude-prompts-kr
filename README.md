@@ -7,4 +7,4 @@ Claude Code를 더 잘 쓰기 위한 실전 프롬프트 모음.
 
 | 프롬프트 | 설명 |
 |---|---|
-| [meeting-recorder](./meeting-recorder/README.md) | 구글밋 자동 녹음 + 트랜스크립트 + 한국어 번역 |
+| [meeting-recorder](./meeting-recorder/README.md) | 미팅 자동 녹음 + 텍스트 변환 + 번역 |
