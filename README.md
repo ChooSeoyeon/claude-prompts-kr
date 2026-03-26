@@ -9,4 +9,4 @@ Claude Code를 더 잘 쓰기 위한 실전 프롬프트 모음.
 |---|---|
 | [meeting-recorder](./meeting-recorder/README.md) | 미팅 녹음 + 텍스트 변환 + 번역 |
 | [session-manager](./session-manager/README.md) | Claude 세션 검색, resume, 다른 프로젝트로 가져오기 |
-| [profile-switcher](./profile-switcher/README.md) | 환경별 API 엔드포인트/토큰 분리 및 프로파일 전환 |
+| [profile-switcher](./profile-switcher/README.md) | 환경별 Claude API 엔드포인트 프로파일 전환 |
