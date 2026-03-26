@@ -1,6 +1,6 @@
 # 미팅 녹음 + 한국어 번역 자동화 세팅
 
-아래 1~2단계는 직접 해야 해. 그 다음은 네가 다 자동으로 해줘.
+아래 1~3단계는 직접 해야 해. 그 다음은 네가 다 자동으로 해줘.
 
 ---
 
@@ -31,9 +31,21 @@ brew install blackhole-2ch
 
 ---
 
-## 3단계: 자동 설치 및 설정 (Claude가 다 해줘)
+## 3단계: Zoom 사용자 설정 확인 (수동)
 
-### 3-1. 패키지 설치
+Zoom을 사용한다면 반드시 아래 설정을 확인해줘:
+
+Zoom → Settings → Audio → Speaker → **Same as System** 으로 변경
+
+이 설정이 되어 있지 않으면 Zoom 오디오가 BlackHole로 전달되지 않아 녹음되지 않음.
+
+완료되면 아래를 진행해줘.
+
+---
+
+## 4단계: 자동 설치 및 설정 (Claude가 다 해줘)
+
+### 4-1. 패키지 설치
 
 - Python 버전 자동 감지 (python3 --version, brew python 등 확인해서 3.8 이상 사용)
 - 감지한 Python으로 설치:
@@ -42,9 +54,9 @@ brew install blackhole-2ch
 - `brew install ffmpeg`
 - `brew install switchaudio-osx`
 
-### 3-2. ~/meetings/ 폴더 생성
+### 4-2. ~/meetings/ 폴더 생성
 
-### 3-3. ~/meetings/record.py 생성
+### 4-3. ~/meetings/record.py 생성
 
 아래 코드를 그대로 사용해서 파일 생성해줘. shebang 첫 줄은 감지한 Python 경로로 바꿔줘.
 
@@ -164,7 +176,7 @@ print(f"\n영어:")
 print(f"/translate-meeting {txt_file} en")
 ```
 
-### 3-4. ~/.claude/commands/translate-meeting.md 생성
+### 4-4. ~/.claude/commands/translate-meeting.md 생성
 
 아래 내용 그대로 파일 생성해줘:
 
@@ -187,14 +199,14 @@ Steps:
 4. If language is `ko` (or default): translate the full transcript to Korean word-for-word (한 토씨도 빼지 말고 전부 번역). Do not summarize. Show only the Korean translation.
 ```
 
-### 3-5. ~/.zshrc에 alias 추가
+### 4-5. ~/.zshrc에 alias 추가
 
 감지한 Python 경로로 아래 alias 추가:
 ```
 alias record-meeting="python3 ~/meetings/record.py"
 ```
 
-### 3-6. 완료 후 사용법 출력
+### 4-6. 완료 후 사용법 출력
 
 ```
 ── 사용법 ──
