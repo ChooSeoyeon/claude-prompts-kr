@@ -8,7 +8,7 @@
 
 1. `record-meeting` — 시스템 오디오 + 마이크 동시 녹음 → `.mp3` 저장
 2. 종료(Ctrl+C) 후 Whisper 자동 실행 → `.txt` 텍스트 변환
-3. `/translate-meeting file.txt ko` — Claude가 한국어로 번역
+3. Claude Code에서 `/translate-meeting file.txt ko` 입력 → Claude가 한국어로 번역
 
 **로컬에서 실행 (무료):**
 - 오디오 녹음 (BlackHole + Python)
@@ -28,8 +28,8 @@
 ## 사용법
 
 ```
-미팅 시작 전:  record-meeting
-미팅 끝나면:   Ctrl+C
-번역 (한국어): /translate-meeting ~/meetings/meeting_파일명.txt ko
-번역 (영어):   /translate-meeting ~/meetings/meeting_파일명.txt en
+미팅 시작 전:        record-meeting
+미팅 끝나면:         Ctrl+C
+번역 (Claude Code): /translate-meeting ~/meetings/meeting_파일명.txt ko
+번역 (영어):        /translate-meeting ~/meetings/meeting_파일명.txt en
 ```
