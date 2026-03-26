@@ -21,7 +21,7 @@
    세션 ID: <uuid>
 
    다른 프로젝트에서 이 세션 이어가려면 (다른 프로젝트로 이동 후 claude 안에서 실행):
-   /import-session <uuid>
+   /session-import <uuid>
 
    이 세션 삭제하려면 (Ctrl+C로 Claude 종료 후 터미널에서 실행):
    rm ~/.claude/projects/<encoded-pwd>/<uuid>.jsonl
@@ -30,7 +30,7 @@
 
 ---
 
-## 2. `~/.claude/commands/import-session.md`
+## 2. `~/.claude/commands/session-import.md`
 
 ````
 다른 프로젝트의 세션 파일을 현재 프로젝트로 복사해온다.
@@ -81,7 +81,7 @@
 
 ---
 
-## 3. `~/.claude/commands/search-session.md`
+## 3. `~/.claude/commands/session-search.md`
 
 ````
 Search through conversation files in the current project by content.

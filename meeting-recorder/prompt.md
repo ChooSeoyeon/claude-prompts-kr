@@ -185,12 +185,12 @@ txt_file = os.path.join(TXT_DIR, f"meeting_{timestamp}.txt")
 print(f"\n저장 완료: {txt_file}")
 print(f"\n── Claude Code에서 번역 ──")
 print(f"{DEFAULT_LANG_NAME} 번역본으로 보기")
-print(f"/translate-meeting {txt_file} {DEFAULT_LANG}")
+print(f"/meeting-translate {txt_file} {DEFAULT_LANG}")
 print(f"\n원문으로 보기")
-print(f"/translate-meeting {txt_file} en")
+print(f"/meeting-translate {txt_file} en")
 ```
 
-### 4-4. ~/.claude/commands/translate-meeting.md 생성
+### 4-4. ~/.claude/commands/meeting-translate.md 생성
 
 아래 내용으로 파일을 생성한다:
 
@@ -198,11 +198,11 @@ print(f"/translate-meeting {txt_file} en")
 The user will provide a .txt file path and optionally a language code as arguments.
 
 Usage:
-- `/translate-meeting file.txt ko` → 한국어 번역
-- `/translate-meeting file.txt en` → 영어
-- `/translate-meeting file.txt ja` → 일본어
+- `/meeting-translate file.txt ko` → 한국어 번역
+- `/meeting-translate file.txt en` → 영어
+- `/meeting-translate file.txt ja` → 일본어
 - 그 외 de, tr, ru 등 대부분의 언어 코드 가능
-- `/translate-meeting file.txt` (언어 코드 없음) → 사용자에게 언어 선택 요청
+- `/meeting-translate file.txt` (언어 코드 없음) → 사용자에게 언어 선택 요청
 
 Steps:
 
@@ -268,7 +268,7 @@ alias record-meeting="python3 ~/Meetings/record.py"
 ── 사용법 ──
 미팅 시작 전:  record-meeting
 미팅 끝나면:   Ctrl+C → MP3 저장 → 출력 복구 → Whisper 자동 전사 → txt 저장
-번역:          /translate-meeting ~/Meetings/txt/meeting_파일명.txt {DEFAULT_LANG}
+번역:          /meeting-translate ~/Meetings/txt/meeting_파일명.txt {DEFAULT_LANG}
 다른 언어:     끝 언어 코드 변경 (en, ja, de, tr, ru 등)
 ```
 

@@ -25,8 +25,8 @@
 
 **Claude Code**
 ```
-번역본 보기: /translate-meeting ~/Meetings/txt/meeting_파일명.txt ko
-원문 보기:   /translate-meeting ~/Meetings/txt/meeting_파일명.txt en
+번역본 보기: /meeting-translate ~/Meetings/txt/meeting_파일명.txt ko
+원문 보기:   /meeting-translate ~/Meetings/txt/meeting_파일명.txt en
 설정 변경:   /meeting-config
 ```
 
@@ -57,7 +57,7 @@ Zoom → Settings → Audio → Speaker → **Same as System** 으로 변경 후
 
 1. 터미널에서 `record-meeting` — 시스템 오디오 + 마이크 동시 녹음 → `.mp3` 저장
 2. 녹음 종료(Ctrl+C) 후 Whisper 자동 실행 → `.txt` 텍스트 변환 (미팅 언어로 전사)
-3. Claude Code에서 `/translate-meeting file.txt ko` 입력 → 설정한 언어로 번역
+3. Claude Code에서 `/meeting-translate file.txt ko` 입력 → 설정한 언어로 번역
 4. `/meeting-config` 로 미팅 언어 / 번역 언어 변경 가능
 
 **로컬에서 실행 (무료):**
