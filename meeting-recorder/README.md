@@ -25,7 +25,7 @@
 
 **Claude Code**
 ```
-번역: /translate-meeting ~/meetings/meeting_파일명.txt ko
+번역: /translate-meeting ~/Meetings/meeting_파일명.txt ko
 ```
 
 ---

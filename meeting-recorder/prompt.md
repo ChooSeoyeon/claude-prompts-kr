@@ -55,9 +55,9 @@ Zoom → Settings → Audio → Speaker → **Same as System** 으로 변경
 - `brew install ffmpeg`
 - `brew install switchaudio-osx`
 
-### 4-2. ~/meetings/ 폴더 생성
+### 4-2. ~/Meetings/ 폴더 생성
 
-### 4-3. ~/meetings/record.py 생성
+### 4-3. ~/Meetings/record.py 생성
 
 아래 코드를 그대로 사용해서 파일 생성해줘. shebang 첫 줄은 감지한 Python 경로로 바꿔줘.
 
@@ -70,7 +70,9 @@ import wave
 import datetime
 import os
 
-OUTPUT_DIR = os.path.expanduser("~/meetings")
+BASE_DIR = os.path.expanduser("~/Meetings")
+MP3_DIR = os.path.join(BASE_DIR, "mp3")
+TXT_DIR = os.path.join(BASE_DIR, "txt")
 
 def get_blackhole_index():
     for i, d in enumerate(sd.query_devices()):
@@ -93,9 +95,10 @@ def get_mic_index():
         if d['max_input_channels'] > 0 and 'BlackHole' not in d['name'] and 'Zoom' not in d['name']:
             return i
 
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+os.makedirs(MP3_DIR, exist_ok=True)
+os.makedirs(TXT_DIR, exist_ok=True)
 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-output_file = os.path.join(OUTPUT_DIR, f"meeting_{timestamp}.mp3")
+output_file = os.path.join(MP3_DIR, f"meeting_{timestamp}.mp3")
 temp_wav = f"/tmp/meeting_{timestamp}.wav"
 
 system_frames = []
@@ -166,9 +169,9 @@ print(f"출력 디바이스: {current_output} (복구)")
 
 # Whisper 자동 실행 (mlx-whisper: M칩 GPU 활용)
 print(f"\nWhisper 전사 중...")
-subprocess.run(["mlx_whisper", output_file, "--language", "English", "--output-format", "txt", "--output-dir", OUTPUT_DIR])
+subprocess.run(["mlx_whisper", output_file, "--language", "English", "--output-format", "txt", "--output-dir", TXT_DIR])
 
-txt_file = output_file.replace(".mp3", ".txt")
+txt_file = os.path.join(TXT_DIR, f"meeting_{timestamp}.txt")
 print(f"\n저장 완료: {txt_file}")
 print(f"\n── Claude Code에서 번역 ──")
 print(f"한국어:")
@@ -204,7 +207,7 @@ Steps:
 
 감지한 Python 경로로 아래 alias 추가:
 ```
-alias record-meeting="python3 ~/meetings/record.py"
+alias record-meeting="python3 ~/Meetings/record.py"
 ```
 
 ### 4-6. 완료 후 사용법 출력
@@ -213,6 +216,6 @@ alias record-meeting="python3 ~/meetings/record.py"
 ── 사용법 ──
 미팅 시작 전:  record-meeting
 미팅 끝나면:   Ctrl+C → MP3 저장 → 출력 복구 → Whisper 자동 전사 → txt 저장
-번역 (한국어): /translate-meeting ~/meetings/meeting_파일명.txt ko
-번역 (영어):   /translate-meeting ~/meetings/meeting_파일명.txt en
+번역 (한국어): /translate-meeting ~/Meetings/meeting_파일명.txt ko
+번역 (영어):   /translate-meeting ~/Meetings/meeting_파일명.txt en
 ```
