@@ -7,8 +7,8 @@
 ## 동작 방식
 
 1. `record-meeting` — 시스템 오디오 + 마이크 동시 녹음 → `.mp3` 저장
-2. 종료(Ctrl+C) 후 Whisper 자동 실행 → `.txt` 텍스트 변환
-3. Claude Code에서 `/translate-meeting file.txt ko` 입력 → Claude가 한국어로 번역
+2. 녹음 종료(Ctrl+C) 후 Whisper 자동 실행 → `.txt` 텍스트 변환
+3. (영어 미팅이라면) Claude Code에서 `/translate-meeting file.txt ko` 입력 → Claude가 한국어로 번역
 
 **로컬에서 실행 (무료):**
 - 오디오 녹음 (BlackHole + Python)
