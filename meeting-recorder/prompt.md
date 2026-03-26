@@ -1,5 +1,5 @@
-# 미팅 녹음 + 한국어 번역 자동화 세팅
-`v1.2.0`
+# 미팅 녹음 + 대본 추출 + 번역 자동화 세팅
+`v1.4.0`
 
 아래 1~3단계는 사용자가 직접 수행한다. 이후 단계는 Claude가 자동으로 진행한다.
 
@@ -44,6 +44,16 @@ Zoom → Settings → Audio → Speaker → **Same as System** 으로 변경
 
 ---
 
+## 3.5단계: 번역 기본 언어 설정
+
+사용자에게 번역 결과를 받을 기본 언어를 물어본다:
+
+> 번역 결과를 받을 언어를 선택해주세요. (예: ko 한국어, en 영어, ja 일본어, de 독일어, tr 튀르키예어, ru 러시아어)
+
+이후 단계에서 선택한 언어 코드를 `{DEFAULT_LANG}` 자리에 적용한다.
+
+---
+
 ## 4단계: 자동 설치 및 설정 (Claude가 처리)
 
 ### 4-1. 패키지 설치
@@ -59,7 +69,7 @@ Zoom → Settings → Audio → Speaker → **Same as System** 으로 변경
 
 ### 4-3. ~/Meetings/record.py 생성
 
-아래 코드를 그대로 사용하여 파일을 생성한다. shebang 첫 줄은 감지한 Python 경로로 변경한다.
+아래 코드를 그대로 사용하여 파일을 생성한다. shebang 첫 줄은 감지한 Python 경로로 변경하고, `{DEFAULT_LANG}`은 선택한 언어 코드로, `{DEFAULT_LANG_NAME}`은 해당 언어 이름으로 교체한다. (예: ko → 한국어, en → 영어, ja → 일본어)
 
 ```python
 #!/usr/bin/env python3
@@ -174,9 +184,9 @@ subprocess.run(["mlx_whisper", output_file, "--language", "English", "--output-f
 txt_file = os.path.join(TXT_DIR, f"meeting_{timestamp}.txt")
 print(f"\n저장 완료: {txt_file}")
 print(f"\n── Claude Code에서 번역 ──")
-print(f"한국어:")
-print(f"/translate-meeting {txt_file} ko")
-print(f"\n영어:")
+print(f"{DEFAULT_LANG_NAME} 번역본으로 보기")
+print(f"/translate-meeting {txt_file} {DEFAULT_LANG}")
+print(f"\n원문으로 보기")
 print(f"/translate-meeting {txt_file} en")
 ```
 
@@ -185,37 +195,81 @@ print(f"/translate-meeting {txt_file} en")
 아래 내용으로 파일을 생성한다:
 
 ```
-The user will provide a .txt file path and optionally a language flag as arguments.
+The user will provide a .txt file path and optionally a language code as arguments.
 
 Usage:
-- `/translate-meeting file.txt` → 한국어 번역 (default)
 - `/translate-meeting file.txt ko` → 한국어 번역
-- `/translate-meeting file.txt en` → 영어 트랜스크립트만
+- `/translate-meeting file.txt en` → 영어
+- `/translate-meeting file.txt ja` → 일본어
+- 그 외 de, tr, ru 등 대부분의 언어 코드 가능
+- `/translate-meeting file.txt` (언어 코드 없음) → 사용자에게 언어 선택 요청
 
 Steps:
 
-1. Parse $ARGUMENTS: first token is the txt file path, second token (if exists) is the language flag (ko/en). Default is ko.
+1. Parse $ARGUMENTS: first token is the txt file path, second token (if exists) is the language code.
 
-2. Read the txt file directly.
+2. If no language code is provided, ask the user to choose:
+   > 번역할 언어를 선택해주세요: ko (한국어), en (영어), ja (일본어), de (독일어), tr (튀르키예어), ru (러시아어), 기타 직접 입력
 
-3. If language is `en`: show only the content as-is.
+3. Read the txt file directly.
 
-4. If language is `ko` (or default): translate the full transcript to Korean word-for-word. Do not omit any part. Do not summarize. Show only the Korean translation.
+4. Translate the full transcript to the target language word-for-word. Do not omit any part. Do not summarize. Show only the translation.
+
+5. If the target language matches the source language (e.g. en→en), show the content as-is.
 ```
 
-### 4-5. ~/.zshrc에 alias 추가
+### 4-5. ~/.claude/commands/meeting-config.md 생성
+
+아래 내용으로 파일을 생성한다:
+
+```
+미팅 녹음 설정을 확인하고 변경한다.
+
+Steps:
+
+1. Read `~/Meetings/record.py`.
+
+2. Extract current settings:
+   - 미팅 언어: `--language` 값 (e.g. English)
+   - 번역 언어: translate-meeting 출력 줄의 언어 코드 (e.g. ko)
+
+3. Show current settings:
+   ── 현재 미팅 설정 ──
+   미팅 언어 (Whisper): English
+   번역 언어: ko (한국어)
+
+4. Ask the user:
+   > 변경할 항목을 선택해주세요:
+   > 1. 미팅 언어 변경 (Whisper가 읽는 언어)
+   > 2. 번역 언어 변경 (Claude가 번역할 언어)
+   > 3. 둘 다 변경
+   > 4. 변경 없음
+
+5. Based on the user's choice, ask for the new value(s) and update `~/Meetings/record.py` accordingly:
+   - 미팅 언어: `--language` 값 교체 + "원문으로 보기" 커맨드의 언어 코드도 함께 교체 (e.g. English→en, Korean→ko, Japanese→ja, German→de, Turkish→tr, Russian→ru)
+   - 번역 언어: "번역본으로 보기" 커맨드의 언어 코드 + 레이블의 언어 이름 교체
+
+6. Confirm the change:
+   ── 설정 변경 완료 ──
+   미팅 언어: Korean
+   번역 언어: de (독일어)
+```
+
+### 4-7. ~/.zshrc에 alias 추가
 
 감지한 Python 경로로 아래 alias를 추가한다:
 ```
 alias record-meeting="python3 ~/Meetings/record.py"
 ```
 
-### 4-6. 완료 후 사용법 출력
+### 4-8. 완료 후 사용법 출력
 
 ```
 ── 사용법 ──
 미팅 시작 전:  record-meeting
 미팅 끝나면:   Ctrl+C → MP3 저장 → 출력 복구 → Whisper 자동 전사 → txt 저장
-번역 (한국어): /translate-meeting ~/Meetings/meeting_파일명.txt ko
-번역 (영어):   /translate-meeting ~/Meetings/meeting_파일명.txt en
+번역:          /translate-meeting ~/Meetings/txt/meeting_파일명.txt {DEFAULT_LANG}
+다른 언어:     끝 언어 코드 변경 (en, ja, de, tr, ru 등)
 ```
+
+`{DEFAULT_LANG}`은 3.5단계에서 선택한 언어 코드로 교체한다.

@@ -1,4 +1,4 @@
-# 미팅 녹음 + 텍스트 변환 + 번역
+# 미팅 녹음 + 대본 추출 + 번역
 
 시스템 오디오 + 마이크를 동시 녹음해 .mp3 파일로 저장. 자동으로 텍스트 변환 후 명령어 하나로 번역까지.
 
@@ -25,7 +25,9 @@
 
 **Claude Code**
 ```
-번역: /translate-meeting ~/Meetings/meeting_파일명.txt ko
+번역본 보기: /translate-meeting ~/Meetings/txt/meeting_파일명.txt ko
+원문 보기:   /translate-meeting ~/Meetings/txt/meeting_파일명.txt en
+설정 변경:   /meeting-config
 ```
 
 ---
@@ -54,8 +56,9 @@ Zoom → Settings → Audio → Speaker → **Same as System** 으로 변경 후
 세팅 후 바로 사용하실 수 있습니다. 내부 동작이 궁금하신 분만 참고하세요.
 
 1. 터미널에서 `record-meeting` — 시스템 오디오 + 마이크 동시 녹음 → `.mp3` 저장
-2. 녹음 종료(Ctrl+C) 후 Whisper 자동 실행 → `.txt` 텍스트 변환
-3. (영어 미팅이라면) Claude Code에서 `/translate-meeting file.txt ko` 입력 → Claude가 한국어로 번역
+2. 녹음 종료(Ctrl+C) 후 Whisper 자동 실행 → `.txt` 텍스트 변환 (미팅 언어로 전사)
+3. Claude Code에서 `/translate-meeting file.txt ko` 입력 → 설정한 언어로 번역
+4. `/meeting-config` 로 미팅 언어 / 번역 언어 변경 가능
 
 **로컬에서 실행 (무료):**
 - 오디오 녹음 (BlackHole + Python)
